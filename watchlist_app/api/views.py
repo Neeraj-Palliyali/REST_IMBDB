@@ -1,17 +1,41 @@
-from rest_framework import serializers, status
+from django.db.models.query import QuerySet
+from django.views import generic
+from rest_framework import mixins, status, generics
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from watchlist_app.api.serializers import StreamPlatformSerializer, WatchListSerializer
-from ..models import StreamPlatform, WatchList
+from watchlist_app.api.serializers import ReviewSerilaizer, StreamPlatformSerializer, WatchListSerializer
+from ..models import Review, StreamPlatform, WatchList
 # Create your views here.
 
+
+class ReviewDetail(mixins.RetrieveModelMixin, generics.GenericAPIView):
+    queryset= Review.objects.all()
+    serializer_class = ReviewSerilaizer
+
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
+    # def retrieve(self, request, *args, **kwargs):
+    #     return super().retrieve(request, *args, **kwargs)
+class ReviewList(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
+
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerilaizer
+
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
+ 
 
 class StreamPlatformListAV(APIView):
     def get(self, request):
         platforms = StreamPlatform.objects.all()
-        serializer = StreamPlatformSerializer(platforms, many=True, context ={'request':request})
+        serializer = StreamPlatformSerializer(
+            platforms, many=True, context={'request': request})
         return Response(serializer.data)
 
     def post(self, request):
@@ -22,20 +46,23 @@ class StreamPlatformListAV(APIView):
 
         return Response(serializer.errors)
 
+
 class StreamPlatformDetailAV(APIView):
     def get(self, request, pk):
         try:
-            platform = StreamPlatform.objects.get(pk = pk)
+            platform = StreamPlatform.objects.get(pk=pk)
         except StreamPlatform.DoesNotExist:
             return Response({'Error': 'Platform not found'}, status=status.HTTP_404_NOT_FOUND)
-        serializer = StreamPlatformSerializer(platform, context ={'request':request})
-        return Response (serializer.data)
+        serializer = StreamPlatformSerializer(
+            platform, context={'request': request})
+        return Response(serializer.data)
 
 
 class WatchListAV(APIView):
     def get(self, request):
         movies = WatchList.objects.all()
-        serializer = WatchListSerializer(movies, many=True, context = {'request': request})
+        serializer = WatchListSerializer(
+            movies, many=True, context={'request': request})
         return Response(serializer.data)
 
     def post(self, request):

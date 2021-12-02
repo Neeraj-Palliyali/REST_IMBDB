@@ -1,10 +1,16 @@
 from django.db import models
 from django.db.models import fields
 from rest_framework import serializers
-from ..models import StreamPlatform, WatchList
+from ..models import Review, StreamPlatform, WatchList
 
-class WatchListSerializer(serializers.ModelSerializer):
+
+class ReviewSerilaizer(serializers.ModelSerializer):
     
+    class Meta:
+        model= Review
+        fields='__all__'
+class WatchListSerializer(serializers.ModelSerializer):
+    reviews = ReviewSerilaizer(many=True, read_only=True)
     class Meta:
         model = WatchList
         fields = '__all__'
