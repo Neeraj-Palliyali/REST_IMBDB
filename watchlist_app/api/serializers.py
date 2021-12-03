@@ -5,23 +5,26 @@ from ..models import Review, StreamPlatform, WatchList
 
 
 class ReviewSerilaizer(serializers.ModelSerializer):
-    
+
     class Meta:
-        model= Review
-        fields='__all__'
+        model = Review
+        fields = '__all__'
+
+
 class WatchListSerializer(serializers.ModelSerializer):
     reviews = ReviewSerilaizer(many=True, read_only=True)
+
     class Meta:
         model = WatchList
         fields = '__all__'
 
+
 class StreamPlatformSerializer(serializers.ModelSerializer):
-    watchlist  = WatchListSerializer(many= True, read_only=True)
+    watchlist = WatchListSerializer(many=True, read_only=True)
+
     class Meta:
-        model=StreamPlatform
-        fields='__all__'
-
-
+        model = StreamPlatform
+        fields = '__all__'
 
 
 # class MovieSerializer(serializers.Serializer):
@@ -49,4 +52,3 @@ class StreamPlatformSerializer(serializers.ModelSerializer):
 #         instance.description = validated_data.get('description', instance.description)
 #         instance.active = validated_data.get('active', instance.active)
 #         return instance
-
